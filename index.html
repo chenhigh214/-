@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>青竹汉字书写系统</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>青竹汉字书写系统（修复版）</title>
 
 <script src="https://unpkg.com/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 
@@ -12,6 +12,7 @@
     --green:#5a7d61;
     --bg:#f2f7f3;
     --line:#dce6dd;
+    --red:#d9534f;
 }
 
 *{
@@ -32,37 +33,30 @@ body{
 
 .container{
     width:100%;
-    max-width:700px;
-    min-height:100vh;
+    max-width:780px;
     background:var(--bg);
+    min-height:100vh;
     padding:20px;
 }
 
-.hidden{
-    display:none !important;
-}
-
-.text-center{
-    text-align:center;
-}
+.hidden{ display:none !important; }
+.text-center{ text-align:center; }
 
 .btn{
-    padding:12px 20px;
+    padding:12px 18px;
     border-radius:8px;
     border:1px solid var(--green);
     background:#fff;
     color:var(--green);
-    font-size:16px;
+    font-size:15px;
     font-weight:bold;
     cursor:pointer;
 }
 
-.btn-fill{
-    background:var(--green);
-    color:#fff;
-}
+.btn-fill{ background:var(--green); color:#fff; }
+.btn-red{ border-color:var(--red); color:var(--red); }
 
-input,textarea{
+input, textarea, select{
     width:100%;
     border:1px solid #ccc;
     border-radius:8px;
@@ -73,10 +67,10 @@ input,textarea{
 
 .task-card{
     background:#fff;
+    border-radius:12px;
     border:1px solid var(--line);
-    border-radius:10px;
-    padding:15px;
-    margin-top:15px;
+    padding:16px;
+    margin-top:18px;
 }
 
 .student-item{
@@ -93,7 +87,7 @@ input,textarea{
     height:300px;
     margin:0 auto;
     border:2px solid var(--green);
-    border-radius:10px;
+    border-radius:12px;
     background:#fff;
     position:relative;
     overflow:hidden;
@@ -105,40 +99,28 @@ input,textarea{
     pointer-events:none;
     z-index:1;
     background-image:
-    linear-gradient(to right,#e8ede9 1px,transparent 1px),
-    linear-gradient(to bottom,#e8ede9 1px,transparent 1px),
-    linear-gradient(45deg,transparent 49.5%,#e8ede9 50%,transparent 50.5%),
-    linear-gradient(-45deg,transparent 49.5%,#e8ede9 50%,transparent 50.5%);
+        linear-gradient(to right,#e8ede9 1px,transparent 1px),
+        linear-gradient(to bottom,#e8ede9 1px,transparent 1px),
+        linear-gradient(45deg,transparent 49.5%,#e8ede9 50%,transparent 50.5%),
+        linear-gradient(-45deg,transparent 49.5%,#e8ede9 50%,transparent 50.5%);
     background-size:50% 50%,50% 50%,100% 100%,100% 100%;
 }
 
-#writer-target{
-    position:absolute;
-    inset:0;
-    z-index:2;
-}
+#writer-target{ position:absolute; inset:0; z-index:2; }
+#writer-target svg { touch-action: none; }
 
 .progress{
     width:100%;
     height:6px;
     background:#ddd;
-    border-radius:10px;
+    border-radius:999px;
     overflow:hidden;
     margin-top:5px;
 }
 
-.progress-bar{
-    height:100%;
-    width:0%;
-    background:var(--green);
-}
+.progress-bar{ width:0%; height:100%; background:var(--green); }
 
-.flex{
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    margin-top:20px;
-}
+.flex{ display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
 
 .modal{
     position:fixed;
@@ -151,27 +133,30 @@ input,textarea{
     padding:20px;
 }
 
-.modal-box{
-    width:100%;
-    max-width:420px;
+.modal-box{ width:100%; max-width:420px; background:#fff; border-radius:12px; padding:25px; }
+
+.rank-box{
+    margin-top:15px;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--line);
+}
+
+.rank-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
     background:#fff;
-    border-radius:12px;
-    padding:25px;
+    border-bottom:1px solid #eee;
+    font-size:14px;
 }
 
-.student-mode #view-admin{
-    display:none !important;
-}
-
-.student-mode .admin-only{
-    display:none !important;
-}
+.admin-only{ text-align:center; margin-top:30px; }
+.student-mode #view-admin, .student-mode .admin-only{ display:none !important; }
+.badge{ display:inline-block; background:var(--green); color:#fff; font-size:12px; padding:4px 8px; border-radius:999px; margin-left:6px; }
 
 @media(max-width:400px){
-    .writer-box{
-        width:260px;
-        height:260px;
-    }
+    .writer-box{ width:260px; height:260px; }
 }
 </style>
 </head>
@@ -180,748 +165,311 @@ input,textarea{
 
 <div class="container">
 
-    <!-- 默认学生登录 -->
+    <!-- 登录 -->
     <div id="view-login">
-
         <div class="text-center" style="margin-top:60px;">
-
-            <h2 style="color:var(--green);">
-                青竹汉字教学系统
-            </h2>
-
-            <p style="margin:25px 0;color:#777;">
-                请输入学生信息开始练习
-            </p>
-
+            <h2 style="color:var(--green);">青竹汉字教学系统</h2>
+            <p style="margin:20px 0;color:#666;">AI 汉字书写练习平台</p>
         </div>
-
-        <div id="student-login-box">
-
-            <input id="stu-name" placeholder="学生姓名" />
-
-            <input id="stu-class" placeholder="班级（例如：2A）" />
-
-            <button
-                class="btn btn-fill"
-                style="width:100%;margin-top:12px;"
-                onclick="startPractice()">
-                开始练习
-            </button>
-
+        <input id="stu-name" placeholder="学生姓名">
+        <input id="stu-class" placeholder="班级（例如：2A）">
+        <button class="btn btn-fill" style="width:100%;margin-top:12px;" onclick="startPractice()">开始练习</button>
+        <div class="admin-only">
+            <button class="btn" onclick="enterAdmin()">教师管理入口</button>
         </div>
-
-        <div class="admin-only" style="margin-top:30px;text-align:center;">
-
-            <button class="btn" onclick="enterAdmin()">
-                教师管理入口
-            </button>
-
-        </div>
-
     </div>
 
     <!-- 教师后台 -->
     <div id="view-admin" class="hidden">
+        <h2 style="color:var(--green);margin-bottom:15px;">教师管理后台</h2>
+        
+        <div class="task-card">
+            <textarea id="task-input" placeholder="输入汉字，例如：你好中国"></textarea>
+            <button class="btn btn-fill" style="width:100%;margin-top:12px;" onclick="addTask()">发布练习</button>
+        </div>
 
-        <h2 style="color:var(--green);margin-bottom:15px;">
-            教师管理后台
-        </h2>
+        <div class="task-card" style="border-top: 4px solid var(--green);">
+            <h3 style="color:var(--green); font-size: 16px;">录入学生成绩码</h3>
+            <textarea id="import-code" placeholder="在此粘贴学生发送的成绩码..." style="height:60px; font-size:12px;"></textarea>
+            <button class="btn btn-fill" style="width:100%;margin-top:10px;" onclick="importScore()">确认录入成绩</button>
+        </div>
 
-        <textarea
-            id="task-input"
-            placeholder="输入汉字，例如：你好中国">
-        </textarea>
+        <div class="task-card">
+            <h3 style="color:var(--green);">数据统计</h3>
+            <div style="line-height:2;margin-top:10px;">
+                总作业数：<span id="stat-task">0</span><br>
+                总提交人数：<span id="stat-submit">0</span><br>
+                平均成绩：<span id="stat-avg">0</span>
+            </div>
+            <button class="btn" style="width:100%; margin-top:10px; font-size: 13px;" onclick="exportCSV()">导出全班成绩表 (CSV)</button>
+        </div>
 
-        <button
-            class="btn btn-fill"
-            style="width:100%;margin-top:12px;"
-            onclick="addTask()">
-            发布练习
-        </button>
+        <div class="task-card">
+            <h3 style="color:var(--green);">学生成绩排行榜</h3>
+            <div id="rank-list" class="rank-box"></div>
+        </div>
 
         <div id="task-list"></div>
 
-        <button
-            class="btn"
-            style="width:100%;margin-top:20px;border:none;"
-            onclick="location.href = window.location.origin + window.location.pathname">
-            退出后台
-        </button>
-
+        <button class="btn" style="width:100%;margin-top:20px;border:none;" onclick="exitAdmin()">退出后台</button>
     </div>
 
-    <!-- 学生练习 -->
+    <!-- 学生书写页（保持原汁原味） -->
     <div id="view-practice" class="hidden text-center">
-
         <div style="margin-bottom:15px;">
-
             <div id="progress-text"></div>
-
-            <div class="progress">
-                <div id="progress-bar" class="progress-bar"></div>
-            </div>
-
+            <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
         </div>
 
-        <div
-            id="char-display"
-            style="font-size:42px;font-weight:bold;color:var(--green);margin-bottom:10px;">
-        </div>
-
-        <div
-            id="step-label"
-            style="font-size:14px;color:#666;margin-bottom:12px;">
-        </div>
+        <div id="pinyin-display" style="font-size:28px;color:var(--green);font-weight:bold;margin-bottom:5px;"></div>
+        <div id="char-display" style="font-size:46px;font-weight:bold;color:var(--green);margin-bottom:8px;"></div>
+        <div id="step-label" style="font-size:14px;color:#666;margin-bottom:12px;"></div>
 
         <div class="writer-box">
-
             <div class="grid"></div>
-
             <div id="writer-target"></div>
-
         </div>
 
         <div class="flex">
-
-            <button
-                id="btn-replay"
-                class="btn"
-                onclick="replayCharacter()">
-                重播演示
-            </button>
-
-            <button
-                id="btn-next"
-                class="btn btn-fill hidden"
-                onclick="nextStep()">
-                下一步
-            </button>
-
+            <button id="btn-replay" class="btn" onclick="replayCharacter()">重播演示</button>
+            <button id="btn-next" class="btn btn-fill hidden" onclick="nextStep()">下一步</button>
         </div>
-
     </div>
 
 </div>
 
-<!-- 成绩弹窗 -->
 <div id="result-modal" class="modal hidden">
-
     <div class="modal-box">
-
-        <h2 style="color:var(--green);text-align:center;">
-            练习完成 🎉
-        </h2>
-
-        <div
-            id="result-content"
-            style="margin:20px 0;line-height:2;">
-        </div>
-
-        <button
-            class="btn btn-fill"
-            style="width:100%;"
-            onclick="location.reload()">
-            提交成绩并关闭
-        </button>
-
+        <h2 style="color:var(--green);text-align:center;">练习完成 🎉</h2>
+        <div id="result-content" style="margin:20px 0;line-height:1.8;"></div>
+        <button class="btn btn-fill" style="width:100%;" onclick="location.reload()">完成</button>
     </div>
-
 </div>
 
 <script>
-
-/* =========================
-   数据库
-========================= */
-
-const DB_TASKS = 'HANZI_TASKS_GITHUB_V1';
-const DB_SCORES = 'HANZI_SCORES_GITHUB_V1';
+const DB_TASKS = 'QZ_TASKS_V3';
+const DB_SCORES = 'QZ_SCORES_V3';
 
 let tasks = JSON.parse(localStorage.getItem(DB_TASKS) || '[]');
 let scores = JSON.parse(localStorage.getItem(DB_SCORES) || '[]');
 
-/* =========================
-   全局状态
-========================= */
+const params = new URLSearchParams(window.location.search);
+const taskText = params.get('task');
+const adminMode = params.get('admin');
 
 let currentTask = null;
 let writer = null;
-
 let charIndex = 0;
 let stepIndex = 0;
-
 let totalMistakes = 0;
 let wordMistakes = 0;
 
-/* =========================
-   URL 参数
-========================= */
-
-const params = new URLSearchParams(window.location.search);
-
-const taskID = params.get('taskID');
-const adminMode = params.get('admin');
-
-/* =========================
-   页面初始化（严格优先级）
-========================= */
-
 window.onload = () => {
-
-    /*
-    第一优先级：
-    只要有 taskID
-    强制学生模式
-    */
-
-    if(taskID){
-
+    if(taskText){
         document.body.classList.add('student-mode');
-
-        currentTask = tasks.find(t => t.id === taskID);
-
-        if(!currentTask){
-
-            alert('找不到该作业');
-
-            showView('view-login');
-
-            return;
-        }
-
+        const chars = decodeURIComponent(taskText).split('').filter(c => /[\u4e00-\u9fa5]/.test(c));
+        if(chars.length === 0){ alert('找不到该作业'); return; }
+        currentTask = { chars };
         showView('view-login');
-
         return;
     }
-
-    /*
-    第二优先级：
-    admin=true
-    */
-
     if(adminMode === 'true'){
-
         const pw = prompt('请输入教师密码');
-
         if(pw === '1998'){
-
             showView('view-admin');
-
             renderTasks();
-
+            renderStatistics();
+            renderRank();
             return;
-
-        }else{
-
+        } else {
             alert('密码错误');
-
-            location.href =
-                window.location.origin +
-                window.location.pathname;
-
+            location.href = window.location.pathname;
             return;
         }
     }
-
-    /*
-    第三优先级：
-    默认学生登录
-    */
-
     showView('view-login');
-
 };
 
-/* =========================
-   页面切换
-========================= */
-
 function showView(id){
-
-    document.getElementById('view-login')
-    .classList.add('hidden');
-
-    document.getElementById('view-admin')
-    .classList.add('hidden');
-
-    document.getElementById('view-practice')
-    .classList.add('hidden');
-
-    document.getElementById(id)
-    .classList.remove('hidden');
-
+    ['view-login','view-admin','view-practice'].forEach(v => document.getElementById(v).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
 }
 
-/* =========================
-   教师入口
-========================= */
-
-function enterAdmin(){
-
-    const url =
-        window.location.origin +
-        window.location.pathname +
-        '?admin=true';
-
-    location.href = url;
-
-}
-
-/* =========================
-   添加作业
-========================= */
+function enterAdmin(){ location.href = window.location.pathname + '?admin=true'; }
+function exitAdmin(){ location.href = window.location.pathname; }
 
 function addTask(){
-
-    const value = document.getElementById('task-input')
-    .value
-    .trim();
-
-    if(!value){
-
-        alert('请输入汉字');
-        return;
-    }
-
-    const chars = value
-    .split('')
-    .filter(c => /[\u4e00-\u9fa5]/.test(c));
-
-    if(chars.length === 0){
-
-        alert('请输入有效汉字');
-        return;
-    }
-
-    const task = {
-
-        id:'T' + Date.now().toString(36).toUpperCase(),
-
-        chars,
-
-        date:new Date().toLocaleString()
-
-    };
-
-    tasks.push(task);
-
+    const value = document.getElementById('task-input').value.trim();
+    if(!value) return alert('请输入汉字');
+    const chars = value.split('').filter(c => /[\u4e00-\u9fa5]/.test(c));
+    if(chars.length === 0) return alert('请输入有效汉字');
+    tasks.unshift({ chars, date:new Date().toLocaleString() });
     localStorage.setItem(DB_TASKS, JSON.stringify(tasks));
-
     document.getElementById('task-input').value = '';
-
     renderTasks();
-
+    renderStatistics();
 }
 
-/* =========================
-   渲染后台
-========================= */
+// 修复后的复制作业链接功能
+function copyLink(chars){
+    const text = encodeURIComponent(chars.join(''));
+    const url = window.location.origin + window.location.pathname + '?task=' + text;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+            .then(() => alert('学生练习链接已复制'))
+            .catch(() => fallbackCopy(url));
+    } else {
+        fallbackCopy(url);
+    }
+}
+
+function fallbackCopy(text) {
+    try {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (successful) { alert('学生练习链接已复制（兼容模式）'); } 
+        else { prompt("复制失败，请手动复制：", text); }
+    } catch (err) { prompt("复制失败，请手动复制：", text); }
+}
+
+function importScore() {
+    const code = document.getElementById('import-code').value.trim();
+    if(!code) return alert('请先粘贴成绩码');
+    try {
+        const decoded = JSON.parse(decodeURIComponent(atob(code)));
+        const isExist = scores.some(s => s.name === decoded.n && s.time === decoded.t);
+        if(isExist) return alert('该成绩已录入');
+        scores.push({ name: decoded.n, cls: decoded.c, score: decoded.s, mistakes: decoded.m, content: decoded.k, time: decoded.t });
+        localStorage.setItem(DB_SCORES, JSON.stringify(scores));
+        alert('导入成功：' + decoded.n);
+        document.getElementById('import-code').value = '';
+        renderTasks(); renderStatistics(); renderRank();
+    } catch (e) { alert('成绩码无效'); }
+}
+
+function exportCSV(){
+    if(scores.length === 0) return alert('暂无数据');
+    let csv = "\ufeff姓名,班级,成绩,错误次数,内容,时间\n";
+    scores.forEach(s => { csv += `${s.name},${s.cls},${s.score},${s.mistakes},${s.content},${s.time}\n`; });
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `成绩表.csv`;
+    link.click();
+}
 
 function renderTasks(){
-
     const list = document.getElementById('task-list');
-
-    list.innerHTML = tasks
-    .slice()
-    .reverse()
-    .map(task => {
-
-        const taskScores =
-            scores.filter(s => s.tid === task.id);
-
-        const studentsHTML =
-            taskScores.length > 0
-            ?
-            taskScores.map(s => `
-                <div class="student-item">
-                    <strong>学生：</strong>${s.name}<br>
-                    <strong>班级：</strong>${s.cls}<br>
-                    <strong>成绩：</strong>${s.score} 分<br>
-                    <strong>提交时间：</strong>${s.time}
-                </div>
-            `).join('')
-            :
-            `<div style="margin-top:10px;color:#999;">
-                暂无学生提交
-            </div>`;
-
+    list.innerHTML = tasks.map((task,index) => {
+        const text = task.chars.join('');
+        const taskScores = scores.filter(s => s.content === text);
         return `
-        <div class="task-card">
-
-            <div style="font-size:20px;color:var(--green);font-weight:bold;">
-                ${task.chars.join('')}
-            </div>
-
-            <div style="margin-top:6px;color:#777;font-size:14px;">
-                发布时间：${task.date}
-            </div>
-
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-
-                <button
-                    class="btn"
-                    style="padding:6px 10px;font-size:12px;"
-                    onclick="copyLink('${task.id}')">
-                    复制学生链接
-                </button>
-
-                <button
-                    class="btn"
-                    style="padding:6px 10px;font-size:12px;color:red;border-color:red;"
-                    onclick="deleteTask('${task.id}')">
-                    删除
-                </button>
-
-            </div>
-
-            <div style="margin-top:15px;">
-
-                <strong>
-                    学生提交记录（${taskScores.length}）
-                </strong>
-
-                ${studentsHTML}
-
-            </div>
-
-        </div>
-        `;
-
+            <div class="task-card">
+                <div style="font-size:22px; color:var(--green); font-weight:bold;">${text}</div>
+                <div style="margin-top:6px; color:#777; font-size:14px;">发布时间：${task.date}</div>
+                <div style="margin-top:10px;">提交人数：<span class="badge">${taskScores.length}</span></div>
+                <div class="flex" style="justify-content:flex-start; margin-top:15px;">
+                    <button class="btn" style="padding:6px 10px;font-size:12px;" onclick='copyLink(${JSON.stringify(task.chars)})'>复制链接</button>
+                    <button class="btn btn-red" style="padding:6px 10px;font-size:12px;" onclick="deleteTask(${index})">删除</button>
+                </div>
+            </div>`;
     }).join('');
-
 }
 
-/* =========================
-   GitHub Pages 分享链接
-========================= */
-
-function copyLink(id){
-
-    const url =
-        window.location.origin +
-        window.location.pathname +
-        '?taskID=' + id;
-
-    navigator.clipboard.writeText(url)
-    .then(() => {
-
-        alert('学生练习链接已复制');
-
-    });
-
+function renderStatistics(){
+    document.getElementById('stat-task').innerText = tasks.length;
+    document.getElementById('stat-submit').innerText = scores.length;
+    const avg = scores.length > 0 ? Math.round(scores.reduce((a,b)=>a+b.score,0) / scores.length) : 0;
+    document.getElementById('stat-avg').innerText = avg + ' 分';
 }
 
-/* =========================
-   删除任务
-========================= */
-
-function deleteTask(id){
-
-    if(confirm('确定删除该作业吗？')){
-
-        tasks = tasks.filter(t => t.id !== id);
-
-        localStorage.setItem(DB_TASKS, JSON.stringify(tasks));
-
-        renderTasks();
-
-    }
-
+function renderRank(){
+    const sorted = [...scores].sort((a,b)=>b.score-a.score).slice(0,10);
+    document.getElementById('rank-list').innerHTML = sorted.length > 0 ? sorted.map((s,i)=>`<div class="rank-row"><div>${i+1}. ${s.name}</div><div>${s.score}分</div></div>`).join('') : `<div class="rank-row">暂无数据</div>`;
 }
 
-/* =========================
-   学生开始
-========================= */
+function deleteTask(index){ if(confirm('确定删除吗？')){ tasks.splice(index,1); localStorage.setItem(DB_TASKS, JSON.stringify(tasks)); renderTasks(); renderStatistics(); } }
 
+/* 学生练习核心逻辑 */
 function startPractice(){
-
-    if(!currentTask){
-
-        alert('当前没有作业');
-
-        return;
-    }
-
-    const name =
-        document.getElementById('stu-name')
-        .value
-        .trim();
-
-    if(!name){
-
-        alert('请输入姓名');
-
-        return;
-    }
-
+    const name = document.getElementById('stu-name').value.trim();
+    if(!name) return alert('请输入姓名');
     showView('view-practice');
-
     loadCharacter();
-
 }
-
-/* =========================
-   加载汉字
-========================= */
 
 function loadCharacter(){
-
     const char = currentTask.chars[charIndex];
-
-    stepIndex = 0;
-
-    wordMistakes = 0;
-
-    document.getElementById('char-display')
-    .innerText = char;
-
-    document.getElementById('progress-text')
-    .innerText =
-        `练习进度：${charIndex + 1} / ${currentTask.chars.length}`;
-
-    document.getElementById('progress-bar')
-    .style.width =
-        ((charIndex + 1) / currentTask.chars.length * 100) + '%';
-
+    stepIndex = 0; wordMistakes = 0;
+    document.getElementById('char-display').innerText = char;
+    document.getElementById('progress-text').innerText = `练习进度：${charIndex+1} / ${currentTask.chars.length}`;
+    document.getElementById('progress-bar').style.width = ((charIndex+1)/currentTask.chars.length*100)+'%';
+    HanziWriter.loadCharacterData(char).then(data=>{ document.getElementById('pinyin-display').innerText = data.pinyin ? data.pinyin[0] : ''; });
     initWriter();
-
 }
-
-/* =========================
-   初始化书写
-========================= */
 
 function initWriter(){
-
     const char = currentTask.chars[charIndex];
-
     document.getElementById('writer-target').innerHTML = '';
-
     const nextBtn = document.getElementById('btn-next');
-
     const replayBtn = document.getElementById('btn-replay');
-
     nextBtn.classList.add('hidden');
+    const config = { width:300, height:300, padding:20, strokeColor:'#333', radicalColor:'#5a7d61', drawingWidth:20, drawingThreshold:40 };
 
-    const size =
-        window.innerWidth < 400 ? 260 : 300;
-
-    const config = {
-
-        width:size,
-        height:size,
-
-        padding:20,
-
-        strokeColor:'#333',
-
-        radicalColor:'#5a7d61',
-
-        drawingWidth:20,
-
-        drawingThreshold:40,
-
-        leniency:1,
-
-        strokeAnimationSpeed:1,
-
-        delayBetweenStrokes:200
-
-    };
-
-    /* 演示 */
     if(stepIndex === 0){
-
-        document.getElementById('step-label')
-        .innerText = '第一步：观察笔顺演示';
-
+        document.getElementById('step-label').innerText = '第一步：观察笔顺演示';
         replayBtn.classList.remove('hidden');
-
-        writer = HanziWriter.create(
-            'writer-target',
-            char,
-            {
-                ...config,
-                showCharacter:true,
-                showOutline:true
-            }
-        );
-
-        writer.animateCharacter({
-
-            onComplete(){
-
-                nextBtn.innerText = '进入描红';
-
-                nextBtn.classList.remove('hidden');
-
-            }
-
-        });
-
-    }
-
-    /* 描红 */
-    else if(stepIndex === 1){
-
-        document.getElementById('step-label')
-        .innerText = '第二步：请跟着提示描红';
-
+        writer = HanziWriter.create('writer-target', char, {...config, showCharacter:true, showOutline:true});
+        writer.animateCharacter({ onComplete(){ nextBtn.innerText = '进入描红'; nextBtn.classList.remove('hidden'); } });
+    } else if(stepIndex === 1){
+        document.getElementById('step-label').innerText = '第二步：请跟着提示描红';
         replayBtn.classList.add('hidden');
-
-        writer = HanziWriter.create(
-            'writer-target',
-            char,
-            {
-                ...config,
-                showCharacter:true,
-                showOutline:true
-            }
-        );
-
-        writer.quiz({
-
-            onMistake(){
-
-                wordMistakes++;
-                totalMistakes++;
-
-            },
-
-            onComplete(){
-
-                nextBtn.innerText = '进入默写';
-
-                nextBtn.classList.remove('hidden');
-
-            }
-
-        });
-
-    }
-
-    /* 默写 */
-    else{
-
-        document.getElementById('step-label')
-        .innerText = '第三步：请凭记忆默写';
-
+        writer = HanziWriter.create('writer-target', char, {...config, showCharacter:true, showOutline:true});
+        writer.quiz({ onMistake(){ totalMistakes++; }, onComplete(){ nextBtn.innerText = '进入默写'; nextBtn.classList.remove('hidden'); } });
+    } else {
+        document.getElementById('step-label').innerText = '第三步：请凭记忆默写';
         replayBtn.classList.add('hidden');
-
-        writer = HanziWriter.create(
-            'writer-target',
-            char,
-            {
-                ...config,
-                showCharacter:false,
-                showOutline:false
-            }
-        );
-
-        writer.quiz({
-
-            onMistake(){
-
-                wordMistakes++;
-                totalMistakes++;
-
-            },
-
-            onComplete(){
-
-                charIndex++;
-
-                if(charIndex < currentTask.chars.length){
-
-                    loadCharacter();
-
-                }else{
-
-                    finishPractice();
-
-                }
-
-            }
-
-        });
-
+        writer = HanziWriter.create('writer-target', char, {...config, showCharacter:false, showOutline:false});
+        writer.quiz({ onMistake(){ totalMistakes++; }, onComplete(){ charIndex++; if(charIndex < currentTask.chars.length) loadCharacter(); else finishPractice(); } });
     }
-
 }
 
-/* =========================
-   下一步
-========================= */
-
-function nextStep(){
-
-    stepIndex++;
-
-    initWriter();
-
-}
-
-/* =========================
-   重播
-========================= */
-
-function replayCharacter(){
-
-    if(writer){
-
-        writer.animateCharacter();
-
-    }
-
-}
-
-/* =========================
-   完成
-========================= */
+function nextStep(){ stepIndex++; initWriter(); }
+function replayCharacter(){ if(writer) writer.animateCharacter(); }
 
 function finishPractice(){
+    const score = Math.max(0,100-totalMistakes*5);
+    const name = document.getElementById('stu-name').value;
+    const cls = document.getElementById('stu-class').value;
+    const time = new Date().toLocaleString();
+    const content = currentTask.chars.join('');
+    const code = btoa(encodeURIComponent(JSON.stringify({ n:name, c:cls, s:score, m:totalMistakes, k:content, t:time })));
 
-    const score =
-        Math.max(0, 100 - totalMistakes * 5);
-
-    const name =
-        document.getElementById('stu-name').value;
-
-    const cls =
-        document.getElementById('stu-class').value;
-
-    document.getElementById('result-content')
-    .innerHTML = `
+    document.getElementById('result-content').innerHTML = `
         <strong>学生：</strong>${name}<br>
-        <strong>班级：</strong>${cls}<br>
-        <strong>成绩：</strong>
-        <span style="font-size:26px;color:var(--green);">
-            ${score} 分
-        </span>
+        <strong>成绩：</strong><span style="font-size:24px;color:var(--green);">${score} 分</span><br>
+        <p style="font-size:12px; color:#666; margin-top:10px;">复制成绩码发给老师：</p>
+        <textarea id="res-code" style="width:100%; height:50px; font-size:10px;" readonly>${code}</textarea>
+        <button class="btn btn-fill" style="width:100%; margin-top:8px; padding:8px;" onclick="copyResCode()">点击复制成绩码</button>
     `;
-
-    document.getElementById('result-modal')
-    .classList.remove('hidden');
-
-    scores.push({
-
-        tid:currentTask.id,
-
-        name,
-
-        cls,
-
-        score,
-
-        time:new Date().toLocaleString()
-
-    });
-
-    localStorage.setItem(DB_SCORES, JSON.stringify(scores));
-
+    document.getElementById('result-modal').classList.remove('hidden');
 }
 
+function copyResCode(){
+    const area = document.getElementById('res-code');
+    area.select();
+    document.execCommand('copy');
+    alert('成绩码已复制！');
+}
 </script>
-
 </body>
 </html>
