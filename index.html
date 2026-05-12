@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>汉字书写教学系统</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:"Microsoft YaHei",sans-serif;
+  background:linear-gradient(135deg,#f6f2ea,#edf4ff);
+  min-height:100vh;
+  color:#333;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.title{
+  font-size:38px;
+  color:#8b4513;
+  font-weight:bold;
+}
+
+.subtitle{
+  margin-top:10px;
+  color:#666;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+button{
+  border:none;
+  border-radius:12px;
+  padding:12px 20px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.25s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+}
+
+.primary-btn{
+  background:#4f7cff;
+  color:white;
+}
+
+.success-btn{
+  background:#22c55e;
+  color:white;
+}
+
+.orange-btn{
+  background:#f59e0b;
+  color:white;
+}
+
+.danger-btn{
+  background:#ef4444;
+  color:white;
+}
+
+input,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  margin-top:10px;
+  margin-bottom:16px;
+  font-size:16px;
+}
+
+textarea{
+  min-height:120px;
+}
+
+.hidden{
+  display:none;
+}
+
+.center{
+  text-align:center;
+}
+
+.top-right{
+  position:fixed;
+  right:20px;
+  top:20px;
+  z-index:999;
+}
+
+.task-card{
+  border:1px solid #eee;
+  border-radius:18px;
+  padding:18px;
+  margin-top:18px;
+  background:#fafafa;
+}
+
+.task-link{
+  margin:12px 0;
+  word-break:break-all;
+  color:#2563eb;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+}
+
+th{
+  background:#f6f8ff;
+}
+
+.progress-wrap{
+  width:100%;
+  max-width:700px;
+  margin:auto;
+}
+
+.progress-top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.progress-bar{
+  height:14px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.progress-inner{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#60a5fa,#4f46e5);
+  transition:.4s;
+}
+
+.character-area{
+  background:white;
+  border-radius:24px;
+  padding:24px;
+  margin-top:20px;
+  text-align:center;
+  animation:fade .4s;
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.pinyin{
+  font-size:28px;
+  color:#666;
+}
+
+.hanzi{
+  font-size:72px;
+  margin-top:10px;
+}
+
+.step-title{
+  margin-top:20px;
+  font-size:24px;
+  color:#8b4513;
+}
+
+.tip{
+  margin-top:10px;
+  color:#666;
+}
+
+.writer-wrap{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  margin-top:24px;
+  flex-wrap:wrap;
+}
+
+.writer-box{
+  width:320px;
+  height:320px;
+  position:relative;
+  border-radius:18px;
+  border:2px solid #e5e7eb;
+  overflow:hidden;
+  background:white;
+}
+
+.grid::before,
+.grid::after{
+  content:'';
+  position:absolute;
+  background:#d1d5db;
+}
+
+.grid::before{
+  width:1px;
+  height:100%;
+  left:50%;
+}
+
+.grid::after{
+  width:100%;
+  height:1px;
+  top:50%;
+}
+
+.diag1,.diag2{
+  position:absolute;
+  width:1px;
+  height:140%;
+  background:#e5e7eb;
+  left:50%;
+  top:-20%;
+}
+
+.diag1{
+  transform:rotate(45deg);
+}
+
+.diag2{
+  transform:rotate(-45deg);
+}
+
+.score-green{
+  color:#16a34a;
+  font-weight:bold;
+}
+
+.score-orange{
+  color:#ea580c;
+  font-weight:bold;
+}
+
+.score-red{
+  color:#dc2626;
+  font-weight:bold;
+}
+
+.finish-card{
+  background:white;
+  border-radius:24px;
+  padding:30px;
+  margin-top:30px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  animation:fade .5s;
+}
+
+.finish-title{
+  text-align:center;
+  font-size:34px;
+  color:#8b4513;
+  margin-bottom:20px;
+}
+
+@media(max-width:768px){
+
+  .title{
+    font-size:28px;
+  }
+
+  .writer-box{
+    width:280px;
+    height:280px;
+  }
+
+  .hanzi{
+    font-size:56px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-right">
+  <button class="orange-btn" onclick="teacherLogin()">
+    教师管理入口
+  </button>
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <div class="title">汉字书写教学系统</div>
+    <div class="subtitle">中国风 · 智能书写训练平台</div>
+  </div>
+
+  <!-- 首页 -->
+  <div id="homePage">
+
+    <div class="card center">
+      <h2>欢迎使用系统</h2>
+      <br>
+      <p>教师创建任务，学生通过链接完成练习。</p>
+    </div>
+
+    <div id="teacherPanel" class="hidden">
+
+      <div class="card">
+
+        <h2>教师后台</h2>
+
+        <textarea id="charsInput" placeholder="请输入汉字，例如：你 好 学 习 汉 字"></textarea>
+
+        <button class="primary-btn" onclick="createTask()">
+          生成作业合集
+        </button>
+
+      </div>
+
+      <div class="card">
+
+        <h2>作业合集管理</h2>
+
+        <div id="taskList"></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 学生页面 -->
+  <div id="studentPage" class="hidden">
+
+    <div class="progress-wrap">
+
+      <div class="progress-top">
+        <div id="progressText">第1/1个汉字</div>
+        <div id="scoreText">当前分数：100</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-inner" id="progressInner"></div>
+      </div>
+
+    </div>
+
+    <!-- 学生信息 -->
+    <div class="card" id="studentInfoCard">
+
+      <h2>学生信息</h2>
+
+      <input type="text" id="studentName" placeholder="请输入英文姓名">
+      <input type="text" id="studentClass" placeholder="请输入班级">
+
+      <button class="primary-btn" onclick="startPractice()">
+        开始练习
+      </button>
+
+    </div>
+
+    <!-- 练习区域 -->
+    <div class="character-area hidden" id="practiceArea">
+
+      <div class="pinyin" id="pinyinText">nǐ</div>
+      <div class="hanzi" id="hanziText">你</div>
+
+      <div class="step-title" id="stepTitle">
+        第一步：观看笔顺动画
+      </div>
+
+      <div class="tip" id="tipText">
+        请观看动画
+      </div>
+
+      <div class="writer-wrap">
+
+        <div>
+          <div class="writer-box grid">
+            <div class="diag1"></div>
+            <div class="diag2"></div>
+            <div id="demoWriter"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="writer-box grid">
+            <div class="diag1"></div>
+            <div class="diag2"></div>
+            <div id="quizWriter"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <br>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+
+        <button class="primary-btn" id="replayBtn">
+          重新播放
+        </button>
+
+        <button class="success-btn hidden" id="startQuizBtn">
+          开始描红
+        </button>
+
+        <button class="orange-btn hidden" id="memoryBtn">
+          进入默写
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- 练习完成页面 -->
+    <div id="finishPage" class="hidden">
+
+      <div class="finish-card">
+
+        <div class="finish-title">
+          练习完成 🎉
+        </div>
+
+        <table>
+
+          <tr>
+            <th>项目</th>
+            <th>内容</th>
+          </tr>
+
+          <tr>
+            <td>姓名</td>
+            <td id="finishName"></td>
+          </tr>
+
+          <tr>
+            <td>班级</td>
+            <td id="finishClass"></td>
+          </tr>
+
+          <tr>
+            <td>成绩</td>
+            <td id="finishScore"></td>
+          </tr>
+
+          <tr>
+            <td>提交时间</td>
+            <td id="finishTime"></td>
+          </tr>
+
+        </table>
+
+        <br>
+
+        <div class="center">
+
+          <button class="success-btn" onclick="submitScore()">
+            提交成绩
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const PASSWORD = "1998";
+
+let currentTask = null;
+let currentIndex = 0;
+let score = 100;
+
+let currentChar = '';
+
+let demoWriter = null;
+let quizWriter = null;
+
+let studentInfo = {
+  name:'',
+  className:''
+};
+
+const pinyinMap = {
+  '你':'nǐ',
+  '好':'hǎo',
+  '学':'xué',
+  '习':'xí',
+  '汉':'hàn',
+  '字':'zì',
+  '中':'zhōng',
+  '国':'guó'
+};
+
+function getTasks(){
+  return JSON.parse(localStorage.getItem('hanzi_tasks') || '[]');
+}
+
+function saveTasks(tasks){
+  localStorage.setItem('hanzi_tasks',JSON.stringify(tasks));
+}
+
+function teacherLogin(){
+
+  const pwd = prompt("请输入教师密码");
+
+  if(pwd === PASSWORD){
+
+    document.getElementById('teacherPanel').classList.remove('hidden');
+
+    renderTasks();
+
+  }else if(pwd !== null){
+
+    alert("密码错误");
+  }
+}
+
+function generateTaskID(){
+  return 'task_' + Date.now();
+}
+
+function createTask(){
+
+  const text = document.getElementById('charsInput').value.trim();
+
+  if(!text){
+    alert("请输入汉字");
+    return;
+  }
+
+  const chars = text.replace(/\s+/g,'').split('');
+
+  const task = {
+    taskID:generateTaskID(),
+    chars,
+    records:[]
+  };
+
+  const tasks = getTasks();
+
+  tasks.unshift(task);
+
+  saveTasks(tasks);
+
+  renderTasks();
+
+  document.getElementById('charsInput').value='';
+
+  alert("创建成功");
+}
+
+function renderTasks(){
+
+  const list = document.getElementById('taskList');
+
+  const tasks = getTasks();
+
+  if(tasks.length===0){
+    list.innerHTML='<p>暂无任务</p>';
+    return;
+  }
+
+  list.innerHTML='';
+
+  tasks.forEach(task=>{
+
+    const url = location.origin + location.pathname + '?taskID=' + task.taskID;
+
+    let rows='';
+
+    task.records.forEach(r=>{
+
+      let cls='score-red';
+
+      if(r.score>=90){
+        cls='score-green';
+      }else if(r.score>=60){
+        cls='score-orange';
+      }
+
+      rows += `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.className}</td>
+        <td class="${cls}">${r.score}</td>
+        <td>${r.time}</td>
+      </tr>
+      `;
+    });
+
+    const div = document.createElement('div');
+
+    div.className='task-card';
+
+    div.innerHTML=`
+      <h3>任务ID：${task.taskID}</h3>
+
+      <p>练习汉字：${task.chars.join(' ')}</p>
+
+      <div class="task-link">${url}</div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+
+        <button class="primary-btn" onclick="copyLink('${url}')">
+          复制学生练习链接
+        </button>
+
+        <button class="danger-btn" onclick="deleteTask('${task.taskID}')">
+          删除合集
+        </button>
+
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>班级</th>
+            <th>成绩</th>
+            <th>提交时间</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows || '<tr><td colspan="4">暂无记录</td></tr>'}
+        </tbody>
+      </table>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function deleteTask(taskID){
+
+  if(!confirm("确认删除该合集吗？")){
+    return;
+  }
+
+  let tasks = getTasks();
+
+  tasks = tasks.filter(t=>t.taskID !== taskID);
+
+  saveTasks(tasks);
+
+  renderTasks();
+}
+
+function copyLink(url){
+
+  navigator.clipboard.writeText(url);
+
+  alert("链接已复制");
+}
+
+function getTaskByID(taskID){
+
+  const tasks = getTasks();
+
+  return tasks.find(t=>t.taskID === taskID);
+}
+
+function startPractice(){
+
+  const name = document.getElementById('studentName').value.trim();
+
+  const className = document.getElementById('studentClass').value.trim();
+
+  if(!name || !className){
+    alert("请填写完整信息");
+    return;
+  }
+
+  studentInfo.name = name;
+  studentInfo.className = className;
+
+  document.getElementById('studentInfoCard').classList.add('hidden');
+
+  document.getElementById('practiceArea').classList.remove('hidden');
+
+  loadCharacter();
+}
+
+function updateProgress(){
+
+  document.getElementById('progressText').innerText =
+  `第 ${currentIndex+1} / ${currentTask.chars.length} 个汉字`;
+
+  document.getElementById('scoreText').innerText =
+  `当前分数：${score}`;
+
+  const percent = (currentIndex/currentTask.chars.length)*100;
+
+  document.getElementById('progressInner').style.width =
+  percent + '%';
+}
+
+function loadCharacter(){
+
+  updateProgress();
+
+  currentChar = currentTask.chars[currentIndex];
+
+  document.getElementById('pinyinText').innerText =
+  pinyinMap[currentChar] || '拼音';
+
+  document.getElementById('hanziText').innerText =
+  currentChar;
+
+  document.getElementById('stepTitle').innerText =
+  '第一步：观看笔顺动画';
+
+  document.getElementById('tipText').innerText =
+  '请观看笔顺动画';
+
+  document.getElementById('demoWriter').innerHTML='';
+  document.getElementById('quizWriter').innerHTML='';
+
+  document.getElementById('startQuizBtn').classList.add('hidden');
+  document.getElementById('memoryBtn').classList.add('hidden');
+
+  demoWriter = HanziWriter.create('demoWriter',currentChar,{
+    width:320,
+    height:320,
+    padding:5
+  });
+
+  demoWriter.animateCharacter();
+
+  quizWriter = HanziWriter.create('quizWriter',currentChar,{
+    width:320,
+    height:320,
+    padding:5,
+    showCharacter:true
+  });
+
+  document.getElementById('replayBtn').onclick=()=>{
+    demoWriter.animateCharacter();
+  };
+
+  setTimeout(()=>{
+    document.getElementById('startQuizBtn').classList.remove('hidden');
+  },2000);
+
+  document.getElementById('startQuizBtn').onclick=startQuiz;
+}
+
+function startQuiz(){
+
+  document.getElementById('stepTitle').innerText =
+  '第二步：描红练习';
+
+  document.getElementById('tipText').innerText =
+  '请按照正确笔顺描红';
+
+  let mistakes = 0;
+
+  quizWriter.quiz({
+
+    leniency:1.5,
+    drawingThreshold:40,
+
+    onMistake:()=>{
+
+      mistakes++;
+
+      score -=5;
+
+      if(score<0){
+        score=0;
+      }
+
+      updateProgress();
+    },
+
+    onComplete:()=>{
+
+      const charScore = 100 - mistakes*5;
+
+      if(charScore < 60){
+
+        alert("该汉字低于60分，需要重新练习");
+
+        loadCharacter();
+
+        return;
+      }
+
+      document.getElementById('memoryBtn').classList.remove('hidden');
+
+      document.getElementById('memoryBtn').onclick=startMemory;
+    }
+  });
+}
+
+function startMemory(){
+
+  document.getElementById('stepTitle').innerText =
+  '第三步：默写训练';
+
+  document.getElementById('tipText').innerText =
+  '请根据拼音默写';
+
+  document.getElementById('quizWriter').innerHTML='';
+
+  quizWriter = HanziWriter.create('quizWriter',currentChar,{
+    width:320,
+    height:320,
+    padding:5,
+    showCharacter:false
+  });
+
+  quizWriter.quiz({
+
+    leniency:1.5,
+    drawingThreshold:40,
+
+    onMistake:()=>{
+
+      score -=5;
+
+      if(score<0){
+        score=0;
+      }
+
+      updateProgress();
+    },
+
+    onComplete:()=>{
+
+      currentIndex++;
+
+      if(currentIndex >= currentTask.chars.length){
+
+        finishPractice();
+
+      }else{
+
+        loadCharacter();
+      }
+    }
+  });
+}
+
+function finishPractice(){
+
+  document.getElementById('practiceArea').classList.add('hidden');
+
+  document.getElementById('finishPage').classList.remove('hidden');
+
+  document.getElementById('finishName').innerText =
+  studentInfo.name;
+
+  document.getElementById('finishClass').innerText =
+  studentInfo.className;
+
+  const scoreEl = document.getElementById('finishScore');
+
+  scoreEl.innerText = score;
+
+  scoreEl.className='';
+
+  if(score>=90){
+
+    scoreEl.classList.add('score-green');
+
+  }else if(score>=60){
+
+    scoreEl.classList.add('score-orange');
+
+  }else{
+
+    scoreEl.classList.add('score-red');
+  }
+
+  document.getElementById('finishTime').innerText =
+  new Date().toLocaleString();
+
+  document.getElementById('progressInner').style.width='100%';
+}
+
+function submitScore(){
+
+  const tasks = getTasks();
+
+  const task = tasks.find(t=>t.taskID === currentTask.taskID);
+
+  task.records.unshift({
+    name:studentInfo.name,
+    className:studentInfo.className,
+    score:score,
+    time:new Date().toLocaleString()
+  });
+
+  saveTasks(tasks);
+
+  alert("成绩提交成功");
+
+  location.href = location.pathname;
+}
+
+(function(){
+
+  const params = new URLSearchParams(location.search);
+
+  const taskID = params.get('taskID');
+
+  if(taskID){
+
+    currentTask = getTaskByID(taskID);
+
+    if(!currentTask){
+
+      document.body.innerHTML =
+      '<h1 style="text-align:center;padding:50px;">作业不存在</h1>';
+
+      return;
+    }
+
+    document.getElementById('homePage').classList.add('hidden');
+
+    document.getElementById('studentPage').classList.remove('hidden');
+  }
+
+})();
+</script>
+
+</body>
+</html>
